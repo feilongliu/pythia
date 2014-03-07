@@ -99,6 +99,10 @@ void compute()
 void createfilesort(const char* filename, const unsigned int maxnum)
 {
 	std::ofstream of(filename);
+	if (!of.is_open()){
+
+               std::cout << "fail to open file " << filename << std::endl;
+        }
 of<<"3|13"<<std::endl;
 of<<"6|16"<<std::endl;
 

@@ -104,6 +104,10 @@ void compute()
 void createfileint(const char* filename, int thread, const unsigned int maxnum)
 {
 	std::ofstream of(filename);
+	if (!of.is_open()){
+
+               std::cout << "fail to open file " << filename << std::endl;
+        }
 	for (unsigned int i=thread*maxnum+1; i<((thread+1)*maxnum+1); ++i)
 	{
 		of << i << "|" << i << std::endl;
@@ -114,6 +118,10 @@ void createfileint(const char* filename, int thread, const unsigned int maxnum)
 void createfiledouble(const char* filename, int thread, const unsigned int maxnum)
 {
 	ofstream of(filename);
+	if (!of.is_open()){
+
+               std::cout << "fail to open file " << filename << std::endl;
+        }
 	for (unsigned int i=thread*maxnum+1; i<((thread+1)*maxnum+1); ++i)
 	{
 		of << i << "|" << fixed << setprecision(1) << i + 0.1 << endl;

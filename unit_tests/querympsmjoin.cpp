@@ -116,6 +116,10 @@ void compute()
 void createfiledouble(const char* filename, const unsigned int maxnum)
 {
 	ofstream of(filename);
+	if (!of.is_open()){
+
+               std::cout << "fail to open file " << filename << std::endl;
+        }
 	for (unsigned int i=1; i<(maxnum+1); ++i)
 	{
 		of << i << "|" << fixed << setprecision(1) << i + 0.1 << endl;

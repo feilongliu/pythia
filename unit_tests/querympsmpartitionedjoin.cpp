@@ -103,6 +103,10 @@ void compute()
 void createfileodd(const char* filename, const unsigned int maxnum)
 {
 	std::ofstream of(filename);
+	if (!of.is_open()){
+
+               std::cout << "fail to open file " << filename << std::endl;
+        }
 	for (unsigned int i=1; i<(maxnum+1); i+=2)
 	{
 		of << i << "|" << i << std::endl;
@@ -113,6 +117,10 @@ void createfileodd(const char* filename, const unsigned int maxnum)
 void createfileeven(const char* filename, const unsigned int maxnum)
 {
 	std::ofstream of(filename);
+	if (!of.is_open()){
+
+               std::cout << "fail to open file " << filename << std::endl;
+        }
 	for (unsigned int i=2; i<(maxnum+1); i+=2)
 	{
 		of << i << "|" << i << std::endl;
@@ -138,6 +146,10 @@ void createfilespecialdouble(const char* filename)
 	// Write to file.
 	//
 	ofstream of(filename);
+	if (!of.is_open()){
+
+               std::cout << "fail to open file " << filename << std::endl;
+        }
 	for (unsigned int j=0; j<vals.size(); ++j)
 	{
 		unsigned int i = vals.at(j);

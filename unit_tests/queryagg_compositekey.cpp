@@ -54,6 +54,9 @@ Query q;
 void createfile_agg(const char* filename)
 {
 	std::ofstream of(filename);
+	if (!of.is_open()){
+		std::cout << "fail to open file " << filename << std::endl;
+	}
 	for (int k=0; k<REPEAT; ++k)
 	{
 		for (unsigned int i=1; i<(TUPLES+1); ++i)

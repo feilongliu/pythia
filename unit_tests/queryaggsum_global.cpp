@@ -97,6 +97,10 @@ void compute(Query& q)
 void createaggfile(const char* filename, const unsigned int maxnum)
 {
 	std::ofstream of(filename);
+	if (!of.is_open()){
+
+               std::cout << "fail to open file " << filename << std::endl;
+        }
 	for (unsigned int i=1; i<(maxnum+1); ++i)
 	{
 		for (unsigned int k=1; k<(i+1); ++k)

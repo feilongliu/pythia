@@ -114,6 +114,10 @@ void createrandomfile(const char* filename, const unsigned int maxnum)
 	}
 
 	std::ofstream of(filename);
+	if (!of.is_open()){
+
+               std::cout << "fail to open file " << filename << std::endl;
+        }
 	for (unsigned int i=0; i<2*maxnum; ++i)
 	{
 		unsigned long val = 1 + (lrand48() % maxnum);
