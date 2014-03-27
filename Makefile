@@ -5,6 +5,7 @@ include system.inc
 
 CPPFLAGS+=-Idist/include/
 
+CXXFLAGS+=-D MYMODIFY 
 CXXFLAGS+=-g 
 #CXXFLAGS+=-O0 -Wall
 CXXFLAGS+=-O3 -Wall
@@ -177,6 +178,7 @@ UNIT_TESTS += \
 DRIVERS = \
 	drivers/executequery \
 	drivers/sample_queries/q1/query1 \
+	drivers/sample_queries/q1/myquery \
 
 # yes, two lines are necessary
 define nl

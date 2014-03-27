@@ -357,7 +357,7 @@ void PrettyPrinterVisitor::visit(JoinOp* op) {
 	cout << "project=[";
 	printJoinProjection(op->projection);
 	cout << "])" << endl;
-
+	
 	for (unsigned int i=0; i<op->barriers.size(); ++i)
 	{
 		printIdent();
@@ -576,6 +576,14 @@ void PrettyPrinterVisitor::printHashJoinOp(HashJoinOp* op)
 	cout << "project=[";
 	printJoinProjection(op->projection);
 	cout << "])" << endl;
+
+	cout << "left thread group = [";
+	for (unsigned int i=0; i<op->leftthreads.size(); i++){
+		if (op->leftthreads[i] != 65535){
+			cout << op->leftthreads[i] << "	";
+		}
+	}
+	cout << "]" << endl;
 
 	for (unsigned int i=0; i<op->barriers.size(); ++i)
 	{

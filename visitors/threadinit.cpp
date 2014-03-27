@@ -60,3 +60,16 @@ void ThreadInitVisitor::visit(MergeOp* op)
 	//
 	op->threadInit(threadid);
 }
+
+void ThreadInitVisitor::visit(HashJoinOp* op)
+{
+	// if threads belong to the leftthreads group, join the initialization
+	//of buildOp, else do not
+	//
+	op->threadInit(threadid);
+	
+	if (op->isLeftThread(threadid)){
+		op->buildOp->accept(this);
+	}
+	op->probeOp->accept(this);
+}

@@ -108,6 +108,9 @@ class ThreadInitVisitor : public SimpleVisitor {
 		virtual void simplevisit(DualInputOp* op);
 		virtual void simplevisit(ZeroInputOp* op);
 		virtual void visit(MergeOp* op);
+		//add function for hashjoin operator
+		virtual void visit(HashJoinOp* op);
+		
 	private:
 		unsigned short threadid;
 };
@@ -119,6 +122,9 @@ class ThreadCloseVisitor : public SimpleVisitor {
 		virtual void simplevisit(DualInputOp* op);
 		virtual void simplevisit(ZeroInputOp* op);
 		virtual void visit(MergeOp* op);
+		
+		//add function for hashjoin operator
+		virtual void visit(HashJoinOp* op);
 	private:
 		unsigned short threadid;
 };

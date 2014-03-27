@@ -181,6 +181,15 @@ std::vector<JoinOp::JoinPrjT> createProjectionVector(const libconfig::Setting& l
 	return ret;
 }
 
+bool JoinOp::isLeftThread(unsigned short threadid){
+	for (int i=0; i<MAX_THREADS; i++){
+		if (threadid == leftthreads[i]){
+			return true;
+		}
+	}
+	return false;
+}
+
 void JoinOp::init(libconfig::Config& root, libconfig::Setting& node)
 {
 	Operator::init(root, node);
@@ -194,6 +203,30 @@ void JoinOp::init(libconfig::Config& root, libconfig::Setting& node)
 	projection = createProjectionVector(node["projection"]);
 	joinattr1 = node["buildjattr"];
 	joinattr2 = node["probejattr"];
+	
+	//create thread groups for left side of join operation
+	if (node.exists("leftthreads")){
+		libconfig::Setting& leftnode = node["leftthreads"];
+		for (int i=0; i<MAX_THREADS; ++i) 
+		{
+			leftthreads.push_back(static_cast<unsigned short>(-1));
+		}
+		dbgassert(leftnode.isAggregate());
+
+		// Fill leftthreads group
+		//
+		for (int j=0; j<leftnode.getLength(); ++j)
+		{
+			int tid = leftnode[j];
+			// Check that same thread does not exist in two groups.
+			assert(leftthreads.at(j) == static_cast<unsigned short>(-1));
+
+			leftthreads.at(j) = tid;
+#ifdef MYMODIFY
+	cout << "for JoinOp init() leftthreads thread " << tid << " j = " << j <<endl;
+#endif
+		}
+	}
 
 	// Create partition groups, and initialize barriers.
 	//
@@ -367,6 +400,9 @@ void HashJoinOp::init(libconfig::Config& root, libconfig::Setting& node)
 
 void HashJoinOp::threadInit(unsigned short threadid)
 {
+#ifdef MYMODIFY
+	cout << "HashJoinOp threadInit for thread = " << threadid << endl;
+#endif
 	void* space2 = numaallocate_local("HJst", sizeof(HashJoinState), this);
 	hashjoinstate[threadid] = new (space2) HashJoinState();
 
@@ -407,33 +443,40 @@ Operator::ResultCode HashJoinOp::scanStart(unsigned short threadid,
 	GetNextResultT result;
 	ResultCode rescode;
 
-	rescode = buildOp->scanStart(threadid, indexdatapage, indexdataschema);
-	if (rescode == Operator::Error) {
-		return Error;
-	}
+	//if threads belong to the leftthreads group, then join the build step.
+	if (isLeftThread(threadid)){
+#ifdef MYMODIFY
+	cout << "HashJoinOp scanStart() build threadid = " << threadid << endl;
+#endif
+		
+		rescode = buildOp->scanStart(threadid, indexdatapage, indexdataschema);
+		if (rescode == Operator::Error) {
+			return Error;
+		}
 
-	while (result.first == Operator::Ready) {
-		result = buildOp->getNext(threadid);
-		buildFromPage(result.second, groupno);
-	}
+		while (result.first == Operator::Ready) {
+			result = buildOp->getNext(threadid);
+			buildFromPage(result.second, groupno);
+		}
 
-	if (result.first == Operator::Error) {
-		return Error;
-	}
+		if (result.first == Operator::Error) {
+			return Error;
+		}
 
-	rescode = buildOp->scanStop(threadid);
-	if (rescode == Operator::Error) {
-		return Error;
-	}
+		rescode = buildOp->scanStop(threadid);
+		if (rescode == Operator::Error) {
+			return Error;
+		}
 
-	TRACE('2');
+		TRACE('2');
+	}
 
 	// This thread is complete. Wait for other threads in the same group (ie.
 	// partition) before you continue, or this thread might lose data.
 	//
-	barriers[groupno].Arrive();
+	//barriers[groupno].Arrive();
 
-	TRACE('3');
+	//TRACE('3');
 
 	// Hash table is complete now, every thread can proceed.
 	// Handle first call: 
@@ -441,10 +484,23 @@ Operator::ResultCode HashJoinOp::scanStart(unsigned short threadid,
 	// 1. Make state.location point at first output tuple of probeOp->GetNext.
 	// 2. Place htiter and pgiter.
 	
+#ifdef MYMODIFY
+	cout << "hashjoinOp scanStart() probe threadid = " << threadid << endl;
+#endif
 	rescode = probeOp->scanStart(threadid, indexdatapage, indexdataschema);
 	if (rescode == Operator::Error) {
 		return Error;
 	}
+	
+	// This thread is complete. Wait for other threads in the same group (ie.
+	// partition) before you continue, or this thread might lose data.
+	//
+#ifdef MYMODIFY
+	cout << "hashjoinOp scanStart() wait for barrier after probe threadid = " << threadid << endl;
+#endif
+	barriers[groupno].Arrive();
+
+	TRACE('3');
 
 	void* tup2;
 	tup2 = readNextTupleFromProbe(threadid);

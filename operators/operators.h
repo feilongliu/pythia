@@ -777,6 +777,8 @@ class JoinOp : public virtual DualInputOp {
 		virtual void accept(Visitor* v) { v->visit(this); }
 
 		virtual void init(libconfig::Config& root, libconfig::Setting& node);
+		
+		virtual bool isLeftThread(unsigned short threadid);
 
 		enum JoinSrcT { BuildSide, ProbeSide };
 		typedef pair<JoinSrcT, unsigned int> JoinPrjT; //< <source, attribute> pair
@@ -792,6 +794,8 @@ class JoinOp : public virtual DualInputOp {
 		vector<unsigned short> groupleader;   //< groupid->leadthreadid
 		vector<unsigned short> groupsize;     //< groupid->size
 		vector<PThreadLockCVBarrier> barriers;//< threadid->barrier
+		
+		vector<unsigned short> leftthreads;		
 };
 
 /**
