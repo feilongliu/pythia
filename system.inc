@@ -16,7 +16,7 @@ CPPFLAGS+=-DSTATS_ALLOCATE
 ###########################################################
 # Compile with NUMΑ-awareness extensions?
 #
-#CPPFLAGS+=-DENABLE_NUMA
+CPPFLAGS+=-DENABLE_NUMA
 
 ###########################################################
 # Enables bitonic sort. This is an experimental feature. 

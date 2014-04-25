@@ -1,5 +1,5 @@
 import random
-NUMMAX = 5000000
+NUMMAX = 400000000
 
 fop=open('opk', 'w')
 fpc=open('pck', 'w')

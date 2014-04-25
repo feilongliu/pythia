@@ -147,7 +147,6 @@ UNIT_TESTS += \
 	unit_tests/querythreadidprepend \
 	unit_tests/querymap \
 	unit_tests/querymapsequence \
-	unit_tests/querydate \
 	unit_tests/queryagg \
 	unit_tests/queryagg_compositekey \
 	unit_tests/queryaggsum \
@@ -179,6 +178,10 @@ DRIVERS = \
 	drivers/executequery \
 	drivers/sample_queries/q1/query1 \
 	drivers/sample_queries/q1/myquery \
+	drivers/sample_queries/q1/myquery_mem \
+	drivers/sample_queries/q1/myquery_mem_4r \
+	drivers/sample_queries/q1/loadMem \
+	drivers/sample_queries/q1/joinBuild \
 
 # yes, two lines are necessary
 define nl

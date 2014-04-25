@@ -65,12 +65,17 @@ void compute()
 	Operator::GetNextResultT result; 
 	
 	startTimer(&timer);
-	if (q.scanStart() != Operator::Ready) {
+//	if (q.scanStart() != Operator::Ready) {
+	if (q.scanStart() == Operator::Error) {
 		fail("Scan initialization failed.");
 	}
 
 	while(result.first == Operator::Ready) {
 		result = q.getNext();
+		
+		if (result.first == Operator::Error){
+			fail("getNext failed");
+		}
 
 		out = result.second;
 
@@ -83,7 +88,8 @@ void compute()
 		}
 	}
 
-	if (q.scanStop() != Operator::Ready) {
+//	if (q.scanStop() != Operator::Ready) {
+	if (q.scanStop() == Operator::Error) {
 		fail("Scan stop failed.");
 	}
 	stopTimer(&timer);

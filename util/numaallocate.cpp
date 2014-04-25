@@ -215,7 +215,7 @@ struct LookasideHeader
 struct Lookaside
 {
 #ifdef ENABLE_NUMA
-	static void* arena[4];
+	static void* arena[2];
 #else
 	static void* arena[1];
 #endif
@@ -261,11 +261,11 @@ void* lookaside_init_alloc(size_t allocsize, int node)
 }
 
 #ifdef ENABLE_NUMA
-void* Lookaside::arena[4] = {
+void* Lookaside::arena[2] = {
 	lookaside_init_alloc(1uLL*1024*1024*1024, 0),
-	lookaside_init_alloc(1uLL*1024*1024*1024, 1),
-	lookaside_init_alloc(1uLL*1024*1024*1024, 2),
-	lookaside_init_alloc(1uLL*1024*1024*1024, 3)
+	lookaside_init_alloc(1uLL*1024*1024*1024, 1)//,
+//	lookaside_init_alloc(1uLL*1024*1024*1024, 2),
+//	lookaside_init_alloc(1uLL*1024*1024*1024, 3)
 };
 #else
 void* Lookaside::arena[1] = {
@@ -361,7 +361,7 @@ void* fastallocate_onnode(const char tag[4], size_t allocsize, int node, void* s
 
 	assert(nodeacq >= 0);
 #ifdef ENABLE_NUMA
-	assert(nodeacq < 4);
+	assert(nodeacq < 2);
 #else
 	assert(nodeacq < 1);
 #endif

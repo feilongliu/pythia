@@ -446,7 +446,7 @@ Operator::ResultCode HashJoinOp::scanStart(unsigned short threadid,
 	//if threads belong to the leftthreads group, then join the build step.
 	if (isLeftThread(threadid)){
 #ifdef MYMODIFY
-	cout << "HashJoinOp scanStart() build threadid = " << threadid << endl;
+	cout << "HashJoinOp scanStart() build threadid = " << threadid << "time " << curtick() << endl;
 #endif
 		
 		rescode = buildOp->scanStart(threadid, indexdatapage, indexdataschema);
@@ -474,8 +474,17 @@ Operator::ResultCode HashJoinOp::scanStart(unsigned short threadid,
 	// This thread is complete. Wait for other threads in the same group (ie.
 	// partition) before you continue, or this thread might lose data.
 	//
-	//barriers[groupno].Arrive();
-
+	//
+	//
+/*	
+#ifdef MYMODIFY
+	cout << "hashjoinOp scanStart() build end wait for barrier threadid = " << threadid << "time " << curtick() << endl;
+#endif
+	barriers[groupno].Arrive();
+#ifdef MYMODIFY
+	cout << "hashjoinOp scanStart() build after barrier threadid = " << threadid << "time " << curtick() << endl;
+#endif
+*/
 	//TRACE('3');
 
 	// Hash table is complete now, every thread can proceed.
@@ -485,7 +494,7 @@ Operator::ResultCode HashJoinOp::scanStart(unsigned short threadid,
 	// 2. Place htiter and pgiter.
 	
 #ifdef MYMODIFY
-	cout << "hashjoinOp scanStart() probe threadid = " << threadid << endl;
+	cout << "hashjoinOp scanStart() probe threadid = " << threadid << "time " << curtick() << endl;
 #endif
 	rescode = probeOp->scanStart(threadid, indexdatapage, indexdataschema);
 	if (rescode == Operator::Error) {
@@ -496,9 +505,12 @@ Operator::ResultCode HashJoinOp::scanStart(unsigned short threadid,
 	// partition) before you continue, or this thread might lose data.
 	//
 #ifdef MYMODIFY
-	cout << "hashjoinOp scanStart() wait for barrier after probe threadid = " << threadid << endl;
+	cout << "hashjoinOp scanStart() wait for barrier after probe threadid = " << threadid << "time " << curtick() << endl;
 #endif
 	barriers[groupno].Arrive();
+#ifdef MYMODIFY
+	cout << "HashJoinOp scanStart() barrier arrived " << threadid << "time " << curtick() << endl;
+#endif
 
 	TRACE('3');
 
@@ -515,6 +527,9 @@ Operator::ResultCode HashJoinOp::scanStart(unsigned short threadid,
 	}
 
 	TRACE('4');
+#ifdef MYMODIFY
+	cout << "HashJoinOp scanStart() end " << threadid << endl;
+#endif
 
 	return rescode;
 }
